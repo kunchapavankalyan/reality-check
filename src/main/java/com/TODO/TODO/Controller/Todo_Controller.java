@@ -5,6 +5,7 @@ import com.TODO.TODO.Entity.Todo_input;
 import com.TODO.TODO.Service.Task_Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,8 @@ public class Todo_Controller {
     private final Task_Service taskService;
 
     @Autowired
-    public Todo_Controller(Task_Service taskService) {
+    public Todo_Controller(Task_Service taskService)
+    {
         this.taskService = taskService;
     }
 
@@ -34,21 +36,22 @@ public class Todo_Controller {
 
     // 3. Add a new task
     @PostMapping
-    public Task addTask(@RequestBody Todo_input todoInput) {
-        return taskService.add_Task(todoInput);
+    public Task addTask(@Valid @RequestBody Todo_input todoInput)
+    {
+        return taskService.add_task(todoInput);
     }
 
     // 4. Update an existing task
     @PutMapping("/{id}")
     public Task updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
         updatedTask.setId(id); // Ensure correct ID
-        return taskService.updateTask(updatedTask);
+        return taskService.update_task(id,updatedTask);
     }
 
     // 5. Delete a task
     @DeleteMapping("/{id}")
     public String deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+        taskService.delete(id);
         return "Task with ID " + id + " deleted successfully!";
     }
 }
