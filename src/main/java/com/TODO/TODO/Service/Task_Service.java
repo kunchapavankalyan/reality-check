@@ -24,7 +24,7 @@ public class Task_Service
     {
         return  todo_repository.findAll();
     }
-    public void add_task(Todo_input todo_input)
+    public Task add_task(Todo_input todo_input)
     {
         Task task=new Task();
         task.setTitle(todo_input.getTitle());
@@ -32,13 +32,32 @@ public class Task_Service
         task.setUpdatedAt(LocalDateTime.now());
         task.setCreatedAt(LocalDateTime.now());
         task.setCompleted(false);
-        todo_repository.save(task);
+        return todo_repository.save(task);
     }
-    public void Update_task(Task task)
-    {
-        task.setUpdatedAt(LocalDateTime.now());
-        todo_repository.save(task);
+    public Task update_task(Long id, Task updatedTask) {
+        Task existingTask = todo_repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        // Update only the fields you send
+        if (updatedTask.getTitle() != null)
+        {
+            existingTask.setTitle(updatedTask.getTitle());
+        }
+        if (updatedTask.getDescription() != null)
+        {
+            existingTask.setDescription(updatedTask.getDescription());
+        }
+        existingTask.setCompleted(true);
+
+        // Keep original createdAt
+        existingTask.setCreatedAt(existingTask.getCreatedAt());
+
+        // Update the updatedAt to now
+        existingTask.setUpdatedAt(LocalDateTime.now());
+
+        return todo_repository.save(existingTask);
     }
+
     public Optional<Task> get_task(Long id)
     {
        return todo_repository.findById(id);
