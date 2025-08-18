@@ -1,5 +1,9 @@
 package com.TODO.TODO.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -65,5 +69,12 @@ public class Task_Service
     public void delete(Long id)
     {
         todo_repository.deleteById(id);
+    }
+
+    public Page<Task> GetTaskWithPagingAndSorting(int page,int size,String sortby,String sortdir)
+    {
+        Sort sort=sortdir.equalsIgnoreCase("asc")? Sort.by(sortby).ascending():Sort.by(sortby).descending();
+        Pageable pageable= PageRequest.of(page,size,sort);
+        return todo_repository.findAll(pageable);
     }
 }
