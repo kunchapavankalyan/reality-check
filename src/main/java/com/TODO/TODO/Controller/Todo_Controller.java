@@ -2,14 +2,16 @@ package com.TODO.TODO.Controller;
 
 import com.TODO.TODO.Entity.Task;
 import com.TODO.TODO.Entity.Todo_input;
+import com.TODO.TODO.Exception.ResourseNotFoundException;
 import com.TODO.TODO.Service.Task_Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-
-import java.util.List;
 import java.util.Optional;
-//this is a controlller1
+import java.util.List;
+
 @RestController
 @RequestMapping("/tasks")
 public class Todo_Controller {
@@ -30,8 +32,10 @@ public class Todo_Controller {
 
     // 2. Get a task by ID
     @GetMapping("/{id}")
-    public Optional<Task> getTask(@PathVariable Long id) {
-        return taskService.get_task(id);
+    public ResponseEntity<Task> getTask(@PathVariable Long id) {
+        Task task= taskService.get_task(id)
+                .orElseThrow(() -> new ResourseNotFoundException("The Task which you are looking for does not exist:" +id));
+        return ResponseEntity.ok(task);
     }
 
     // 3. Add a new task
@@ -54,4 +58,16 @@ public class Todo_Controller {
         taskService.delete(id);
         return "Task with ID " + id + " deleted successfully!";
     }
+    @GetMapping("/pagesort")
+    public Page<Task> GetPaginationAndSorting
+            (
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String SortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+            )
+    {
+        return taskService.GetTaskWithPagingAndSorting(page,size,SortBy,sortDir);
+    }
+
 }
